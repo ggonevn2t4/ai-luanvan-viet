@@ -41,11 +41,19 @@ const Auth = () => {
       });
 
       if (error) {
-        toast({
-          title: "Lỗi đăng nhập",
-          description: error.message,
-          variant: "destructive",
-        });
+        if (error.message.includes("Invalid login credentials")) {
+          toast({
+            title: "Thông tin đăng nhập không đúng",
+            description: "Email hoặc mật khẩu không chính xác.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Lỗi đăng nhập",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       } else {
         toast({
           title: "Đăng nhập thành công",
@@ -79,20 +87,33 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
+      const redirectUrl = `${window.location.origin}/`;
+      
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`
-        }
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: email.split('@')[0], // Use email prefix as default name
+          },
+        },
       });
 
       if (error) {
-        toast({
-          title: "Lỗi đăng ký",
-          description: error.message,
-          variant: "destructive",
-        });
+        if (error.message.includes("User already registered")) {
+          toast({
+            title: "Tài khoản đã tồn tại",
+            description: "Email này đã được đăng ký. Vui lòng đăng nhập.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Lỗi đăng ký",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       } else {
         toast({
           title: "Đăng ký thành công",

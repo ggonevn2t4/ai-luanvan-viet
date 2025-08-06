@@ -37,6 +37,7 @@ const Header = () => {
 
   const navItems = [
     { name: "Trang chủ", path: "/" },
+    ...(user ? [{ name: "Dashboard", path: "/dashboard" }] : []),
     { name: "Viết luận văn", path: "/write" },
     { name: "Bảng giá", path: "/pricing" },
     { name: "Về chúng tôi", path: "/about" },

@@ -117,9 +117,29 @@ const Write = () => {
       }
 
       setGeneratedContent(data.content);
+      
+      // Save thesis to database
+      try {
+        const { error: dbError } = await supabase
+          .from('theses')
+          .insert({
+            user_id: user?.id,
+            title: topic.trim(),
+            content: data.content,
+            subject: major,
+            status: 'completed'
+          });
+
+        if (dbError) {
+          console.error('Error saving thesis:', dbError);
+        }
+      } catch (dbError) {
+        console.error('Error saving to database:', dbError);
+      }
+
       toast({
         title: "Thành công",
-        description: "Luận văn đã được tạo thành công!",
+        description: "Luận văn đã được tạo và lưu thành công!",
       });
 
     } catch (error) {
