@@ -26,6 +26,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { OutlineGenerator } from "@/components/OutlineGenerator";
+import { MultiStageGenerator } from "@/components/MultiStageGenerator";
 import { CollaborationDashboard } from "@/components/collaboration/CollaborationDashboard";
 import ExportDialog from "@/components/ExportDialog";
 import RealTimeVoiceChat from "@/components/RealTimeVoiceChat";
@@ -50,6 +51,7 @@ const Write = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [showOutlineGenerator, setShowOutlineGenerator] = useState(false);
+  const [showMultiStageGenerator, setShowMultiStageGenerator] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -493,6 +495,66 @@ const Write = () => {
               />
             </div>
           )}
+
+          {/* Multi-Stage Generator - Shows when toggled */}
+          {showMultiStageGenerator && (
+            <div className="lg:col-span-2">
+              <MultiStageGenerator
+                thesisData={{
+                  topic,
+                  major,
+                  academicLevel,
+                  pages: pages[0],
+                  requirements,
+                  researchMethod,
+                  citationFormat
+                }}
+                onStageComplete={(stage, content, metadata) => {
+                  // Handle completion of each stage
+                  if (stage === 'chapters') {
+                    setGeneratedContent(content);
+                    
+                    // Save the completed thesis to database
+                    if (user) {
+                      supabase
+                        .from('theses')
+                        .upsert({
+                          id: currentThesis?.id,
+                          user_id: user.id,
+                          title: topic.trim(),
+                          content: content,
+                          subject: major,
+                          research_method: researchMethod,
+                          citation_format: citationFormat,
+                          pages_target: pages[0],
+                          description: requirements.trim(),
+                          status: 'completed',
+                          progress_percentage: 100,
+                          updated_at: new Date().toISOString()
+                        })
+                        .then(({ data, error }) => {
+                          if (error) {
+                            console.error('Error saving thesis:', error);
+                          } else {
+                            console.log('Thesis saved successfully');
+                            if (!currentThesis && data && data[0]) {
+                              setCurrentThesis(data[0]);
+                            }
+                          }
+                        });
+                    }
+                  }
+                  
+                  toast({
+                    title: "Giai đoạn hoàn thành",
+                    description: `${stage === 'outline' ? 'Outline' : 
+                                   stage === 'chapters' ? 'Nội dung' : 
+                                   'Tinh chỉnh'} đã được tạo thành công!`,
+                  });
+                }}
+              />
+            </div>
+          )}
           
           {/* Input Form */}
           {/* Input Form */}
@@ -500,14 +562,24 @@ const Write = () => {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 Thông tin luận văn
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowOutlineGenerator(!showOutlineGenerator)}
-                >
-                  <Lightbulb className="w-4 h-4 mr-2" />
-                  {showOutlineGenerator ? 'Ẩn' : 'Tạo'} dàn bài
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowOutlineGenerator(!showOutlineGenerator)}
+                  >
+                    <Lightbulb className="w-4 h-4 mr-2" />
+                    {showOutlineGenerator ? 'Ẩn' : 'Tạo'} dàn bài
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowMultiStageGenerator(!showMultiStageGenerator)}
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    {showMultiStageGenerator ? 'Ẩn' : 'Tạo'} theo giai đoạn
+                  </Button>
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
