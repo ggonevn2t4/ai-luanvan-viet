@@ -18,13 +18,7 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        // Premium Vietnamese-inspired variants
-        vietnamese: "btn-gradient shadow-elegant hover:shadow-glow font-vietnamese font-semibold",
-        glass: "btn-glass text-foreground hover:text-primary",
-        premium: "bg-gradient-hero text-white font-bold shadow-glow hover:scale-105 transition-all duration-300",
-        coral: "bg-primary hover:bg-primary-glow text-primary-foreground shadow-elegant hover:shadow-glow",
-        teal: "bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-card hover:shadow-elegant",
-        golden: "bg-accent hover:bg-accent/90 text-accent-foreground shadow-card hover:shadow-elegant",
+        vietnamese: "bg-gradient-primary text-primary-foreground hover:shadow-glow hover:scale-[1.02] transition-all duration-300",
         hero: "bg-gradient-hero text-primary-foreground hover:shadow-elegant hover:scale-[1.05] transition-all duration-300 font-semibold",
         success: "bg-success text-success-foreground hover:bg-success/90"
       },
@@ -34,9 +28,6 @@ const buttonVariants = cva(
         lg: "h-11 rounded-md px-8",
         xl: "h-14 rounded-lg px-10 text-base",
         icon: "h-10 w-10",
-        // Premium sizes with 8px grid system
-        premium: "h-12 px-grid-6 py-grid-3 text-lg",
-        hero: "h-14 px-grid-8 py-grid-4 text-xl font-bold",
       },
     },
     defaultVariants: {
