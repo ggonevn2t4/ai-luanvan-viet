@@ -7,6 +7,7 @@ import { Clock, Star, Headphones, BookOpen, TrendingUp, Shield, Play } from "luc
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-vietnamese-ai.jpg";
 import DemoContent from "@/components/DemoContent";
+import { ThesisGenerator } from "@/components/ThesisGenerator";
 
 const Index = () => {
   const features = [
@@ -111,11 +112,24 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Demo and Examples Section */}
+      {/* AI Generator Section */}
       <section className="py-20 bg-gradient-to-br from-primary/5 to-accent/5">
         <div className="container mx-auto px-4">
-          <Tabs defaultValue="demo" className="w-full">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+              Trải nghiệm AI tạo luận văn
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Tạo luận văn chuyên nghiệp ngay lập tức với công nghệ AI hàng đầu
+            </p>
+          </div>
+          
+          <Tabs defaultValue="generator" className="w-full">
+            <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3">
+              <TabsTrigger value="generator" className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4" />
+                Tạo luận văn
+              </TabsTrigger>
               <TabsTrigger value="demo" className="flex items-center gap-2">
                 <Play className="w-4 h-4" />
                 Xem Demo
@@ -125,6 +139,10 @@ const Index = () => {
                 Thống kê
               </TabsTrigger>
             </TabsList>
+            
+            <TabsContent value="generator" className="mt-12">
+              <ThesisGenerator />
+            </TabsContent>
             
             <TabsContent value="demo" className="mt-12">
               <DemoContent />
