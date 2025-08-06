@@ -9,6 +9,8 @@ import heroImage from "@/assets/hero-vietnamese-ai.jpg";
 import DemoContent from "@/components/DemoContent";
 import { ThesisGenerator } from "@/components/ThesisGenerator";
 
+console.log('Index page rendering...');
+
 const Index = () => {
   const features = [
     {
