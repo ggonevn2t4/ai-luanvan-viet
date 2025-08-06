@@ -27,6 +27,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { OutlineGenerator } from "@/components/OutlineGenerator";
 import { CollaborationDashboard } from "@/components/collaboration/CollaborationDashboard";
+import ExportDialog from "@/components/ExportDialog";
+import RealTimeVoiceChat from "@/components/RealTimeVoiceChat";
 
 const Write = () => {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -658,33 +660,28 @@ const Write = () => {
               {generatedContent ? (
                 <div className="space-y-4">
                   <div className="flex gap-2 mb-4 flex-wrap">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleExport('pdf')}
-                      disabled={isExporting}
-                    >
-                      <FileDown className="w-4 h-4 mr-2" />
-                      {isExporting && exportFormat === 'pdf' ? 'Đang xuất...' : 'Xuất PDF'}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleExport('docx')}
-                      disabled={isExporting}
-                    >
-                      <File className="w-4 h-4 mr-2" />
-                      {isExporting && exportFormat === 'docx' ? 'Đang xuất...' : 'Xuất DOCX'}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleExport('latex')}
-                      disabled={isExporting}
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      {isExporting && exportFormat === 'latex' ? 'Đang xuất...' : 'Xuất LaTeX'}
-                    </Button>
+                    <ExportDialog 
+                      thesis={{
+                        id: currentThesis?.id || 'temp',
+                        title: topic || 'Luận văn',
+                        content: generatedContent,
+                        subject: major,
+                        citation_format: citationFormat,
+                        tags: [major],
+                        author: {
+                          name: user?.email || 'Người dùng',
+                          studentId: '[MSHV]',
+                          class: '[Lớp]', 
+                          supervisor: '[Tên GVHD]'
+                        }
+                      }}
+                      trigger={
+                        <Button variant="outline" size="sm">
+                          <Download className="w-4 h-4 mr-2" />
+                          Xuất chuyên nghiệp
+                        </Button>
+                      }
+                    />
                     <Button variant="outline" size="sm">
                       <Edit className="w-4 h-4 mr-2" />
                       Chỉnh sửa
@@ -735,6 +732,14 @@ const Write = () => {
             />
           </div>
         )}
+
+        {/* AI Voice Assistant */}
+        <div className="mt-8">
+          <RealTimeVoiceChat 
+            thesisId={currentThesis?.id}
+            className="w-full"
+          />
+        </div>
       </div>
 
       <Footer />
