@@ -340,6 +340,75 @@ export type Database = {
           },
         ]
       }
+      payment_transactions: {
+        Row: {
+          amount_vnd: number
+          bank_account_info: Json | null
+          created_at: string
+          id: string
+          notes: string | null
+          payment_method: string
+          payment_proof_url: string | null
+          plan_id: string
+          status: string
+          subscription_id: string | null
+          transaction_code: string | null
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          amount_vnd: number
+          bank_account_info?: Json | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_method?: string
+          payment_proof_url?: string | null
+          plan_id: string
+          status?: string
+          subscription_id?: string | null
+          transaction_code?: string | null
+          updated_at?: string
+          user_id: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          amount_vnd?: number
+          bank_account_info?: Json | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_method?: string
+          payment_proof_url?: string | null
+          plan_id?: string
+          status?: string
+          subscription_id?: string | null
+          transaction_code?: string | null
+          updated_at?: string
+          user_id?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_transactions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_transactions_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "user_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -364,6 +433,48 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      subscription_plans: {
+        Row: {
+          created_at: string
+          description: string | null
+          description_vietnamese: string | null
+          duration_months: number
+          features: Json
+          id: string
+          is_active: boolean | null
+          name: string
+          name_vietnamese: string
+          price_vnd: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          description_vietnamese?: string | null
+          duration_months?: number
+          features?: Json
+          id?: string
+          is_active?: boolean | null
+          name: string
+          name_vietnamese: string
+          price_vnd: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          description_vietnamese?: string | null
+          duration_months?: number
+          features?: Json
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          name_vietnamese?: string
+          price_vnd?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -507,6 +618,86 @@ export type Database = {
         }
         Relationships: []
       }
+      user_subscriptions: {
+        Row: {
+          auto_renew: boolean | null
+          bank_transaction_code: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          payment_method: string | null
+          plan_id: string | null
+          starts_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_renew?: boolean | null
+          bank_transaction_code?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          payment_method?: string | null
+          plan_id?: string | null
+          starts_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_renew?: boolean | null
+          bank_transaction_code?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          payment_method?: string | null
+          plan_id?: string | null
+          starts_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_usage: {
+        Row: {
+          count: number
+          created_at: string
+          feature_type: string
+          id: string
+          reset_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          count?: number
+          created_at?: string
+          feature_type: string
+          id?: string
+          reset_date?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          count?: number
+          created_at?: string
+          feature_type?: string
+          id?: string
+          reset_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -516,6 +707,10 @@ export type Database = {
         Args: { thesis_id_param: string }
         Returns: number
       }
+      check_feature_limit: {
+        Args: { user_id_param: string; feature_type_param: string }
+        Returns: boolean
+      }
       create_default_chapters: {
         Args: { thesis_id_param: string; user_id_param: string }
         Returns: undefined
@@ -523,6 +718,21 @@ export type Database = {
       get_current_user_email: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_user_subscription: {
+        Args: { user_id_param: string }
+        Returns: {
+          subscription_id: string
+          plan_name: string
+          plan_name_vietnamese: string
+          status: string
+          features: Json
+          expires_at: string
+        }[]
+      }
+      increment_feature_usage: {
+        Args: { user_id_param: string; feature_type_param: string }
+        Returns: boolean
       }
     }
     Enums: {
