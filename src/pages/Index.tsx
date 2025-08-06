@@ -2,9 +2,11 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Clock, Star, Headphones, BookOpen, TrendingUp, Shield } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Clock, Star, Headphones, BookOpen, TrendingUp, Shield, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-vietnamese-ai.jpg";
+import DemoContent from "@/components/DemoContent";
 
 const Index = () => {
   const features = [
@@ -106,6 +108,49 @@ const Index = () => {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Demo and Examples Section */}
+      <section className="py-20 bg-gradient-to-br from-primary/5 to-accent/5">
+        <div className="container mx-auto px-4">
+          <Tabs defaultValue="demo" className="w-full">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+              <TabsTrigger value="demo" className="flex items-center gap-2">
+                <Play className="w-4 h-4" />
+                Xem Demo
+              </TabsTrigger>
+              <TabsTrigger value="stats" className="flex items-center gap-2">
+                <Star className="w-4 h-4" />
+                Thống kê
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="demo" className="mt-12">
+              <DemoContent />
+            </TabsContent>
+            
+            <TabsContent value="stats" className="mt-12">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold text-primary">1000+</div>
+                  <div className="text-sm text-muted-foreground">Luận văn đã tạo</div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold text-accent">500+</div>
+                  <div className="text-sm text-muted-foreground">Sinh viên tin tưởng</div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold text-secondary">50+</div>
+                  <div className="text-sm text-muted-foreground">Chuyên ngành</div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold text-primary">4.9/5</div>
+                  <div className="text-sm text-muted-foreground">Đánh giá từ người dùng</div>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </section>
 

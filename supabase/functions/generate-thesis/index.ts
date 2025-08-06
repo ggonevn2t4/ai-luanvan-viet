@@ -105,7 +105,7 @@ Lưu ý quan trọng:
         'X-Title': 'Vietnamese Thesis Generator'
       },
       body: JSON.stringify({
-        model: 'moonshot/moonshot-v1-auto',
+        model: 'deepseek/deepseek-chat',
         messages: [
           {
             role: 'system',
