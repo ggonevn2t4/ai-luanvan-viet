@@ -2,118 +2,135 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Vietnamese AI Thesis Platform Design System - All colors MUST be HSL */
+/* Premium Vietnamese AI Design System - All colors MUST be HSL */
 
 @layer base {
   :root {
-    /* Base colors - Vietnamese theme */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Premium Color Palette */
+    --background: 248 250 252; /* #F8F9FA - Light */
+    --foreground: 210 14% 18%; /* #2C3E50 - Dark */
 
-    /* Card components */
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Card components with glassmorphism */
+    --card: 0 0% 100% / 0.85;
+    --card-foreground: 210 14% 18%;
 
     /* Popover components */
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100% / 0.95;
+    --popover-foreground: 210 14% 18%;
 
-    /* Primary - Professional Vietnamese blue */
-    --primary: 220 91% 35%;
+    /* Primary - Coral Red */
+    --primary: 0 69% 67%; /* #FF6B6B */
     --primary-foreground: 0 0% 98%;
-    --primary-glow: 220 91% 45%;
+    --primary-glow: 0 69% 77%;
 
-    /* Secondary - Light Vietnamese accent */
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 91% 35%;
+    /* Secondary - Teal */
+    --secondary: 175 70% 58%; /* #4ECDC4 */
+    --secondary-foreground: 0 0% 98%;
+
+    /* Accent - Golden Yellow */
+    --accent: 48 100% 62%; /* #FFD93D */
+    --accent-foreground: 210 14% 18%;
 
     /* Muted colors */
     --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
+    --muted-foreground: 215 14% 52%;
 
-    /* Accent - Vietnamese red for highlights */
-    --accent: 0 84% 55%;
-    --accent-foreground: 0 0% 98%;
-
-    /* Success - Vietnamese academic green */
+    /* Success */
     --success: 142 76% 36%;
     --success-foreground: 0 0% 98%;
 
-    /* Vietnamese academic gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 50%, hsl(220 91% 55%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 14% 98%) 100%);
+    /* Vietnamese Flag Inspired Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(0 69% 67%), hsl(48 100% 62%));
+    --gradient-hero: linear-gradient(135deg, hsl(0 69% 67%) 0%, hsl(48 100% 62%) 50%, hsl(175 70% 58%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100% / 0.9) 0%, hsl(0 0% 100% / 0.7) 100%);
+    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.25) 0%, hsl(0 0% 100% / 0.1) 100%);
     
-    /* Vietnamese academic shadows */
-    --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.2);
-    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.3);
-    --shadow-card: 0 4px 20px -2px hsl(var(--primary) / 0.1);
+    /* Premium Shadows */
+    --shadow-elegant: 0 10px 30px -10px hsl(0 69% 67% / 0.3);
+    --shadow-glow: 0 0 40px hsl(0 69% 77% / 0.4);
+    --shadow-card: 0 8px 32px -8px hsl(0 0% 0% / 0.1);
+    --shadow-glass: 0 8px 32px 0 hsl(0 0% 0% / 0.1);
 
-    /* Animation timing */
+    /* Animation timing - smooth micro-interactions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* Glassmorphism backdrop blur */
+    --blur-glass: blur(12px);
+    --blur-card: blur(8px);
+
+    /* 8px Grid System */
+    --space-unit: 8px;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 94%;
-    --ring: 220 91% 35%;
+    --border: 0 0% 0% / 0.1;
+    --input: 0 0% 100% / 0.8;
+    --ring: 0 69% 67%;
 
-    --radius: 0.5rem;
+    --radius: 12px;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
+    --sidebar-background: 0 0% 100% / 0.85;
+    --sidebar-foreground: 210 14% 18%;
+    --sidebar-primary: 0 69% 67%;
     --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 210 14% 18%;
+    --sidebar-border: 0 0% 0% / 0.1;
+    --sidebar-ring: 0 69% 67%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark mode with premium contrast */
+    --background: 210 14% 18%; /* #2C3E50 */
+    --foreground: 248 250 252; /* #F8F9FA */
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 210 14% 18% / 0.85;
+    --card-foreground: 248 250 252;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 210 14% 18% / 0.95;
+    --popover-foreground: 248 250 252;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Primary remains bright in dark mode */
+    --primary: 0 69% 67%; /* #FF6B6B */
+    --primary-foreground: 210 14% 18%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    /* Secondary adjusted for dark */
+    --secondary: 175 70% 58%; /* #4ECDC4 */
+    --secondary-foreground: 210 14% 18%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    /* Accent remains vibrant */
+    --accent: 48 100% 62%; /* #FFD93D */
+    --accent-foreground: 210 14% 18%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --muted: 217 32% 18%;
+    --muted-foreground: 215 20% 65%;
+
+    --success: 142 76% 46%;
+    --success-foreground: 210 14% 18%;
+
+    /* Dark mode gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(0 69% 67%), hsl(48 100% 62%));
+    --gradient-hero: linear-gradient(135deg, hsl(210 14% 18%) 0%, hsl(210 14% 25%) 50%, hsl(210 14% 30%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(210 14% 18% / 0.9) 0%, hsl(210 14% 15% / 0.7) 100%);
+    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.1) 0%, hsl(0 0% 100% / 0.05) 100%);
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 0 0% 100% / 0.1;
+    --input: 210 14% 18% / 0.8;
+    --ring: 0 69% 67%;
+
+    --sidebar-background: 210 14% 18% / 0.85;
+    --sidebar-foreground: 248 250 252;
+    --sidebar-primary: 0 69% 67%;
+    --sidebar-primary-foreground: 210 14% 18%;
+    --sidebar-accent: 210 14% 25%;
+    --sidebar-accent-foreground: 248 250 252;
+    --sidebar-border: 0 0% 100% / 0.1;
+    --sidebar-ring: 0 69% 67%;
   }
 }
 
@@ -122,7 +139,194 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Glassmorphism base classes */
+  .glass {
+    background: var(--gradient-glass);
+    backdrop-filter: var(--blur-glass);
+    -webkit-backdrop-filter: var(--blur-glass);
+    border: 1px solid hsl(0 0% 100% / 0.2);
+  }
+
+  .glass-card {
+    background: var(--gradient-card);
+    backdrop-filter: var(--blur-card);
+    -webkit-backdrop-filter: var(--blur-card);
+    border: 1px solid hsl(0 0% 100% / 0.2);
+    box-shadow: var(--shadow-glass);
+  }
+
+  /* 8px Grid System Classes */
+  .space-1 { margin: calc(var(--space-unit) * 1); }
+  .space-2 { margin: calc(var(--space-unit) * 2); }
+  .space-3 { margin: calc(var(--space-unit) * 3); }
+  .space-4 { margin: calc(var(--space-unit) * 4); }
+  .space-5 { margin: calc(var(--space-unit) * 5); }
+  .space-6 { margin: calc(var(--space-unit) * 6); }
+  .space-8 { margin: calc(var(--space-unit) * 8); }
+  .space-10 { margin: calc(var(--space-unit) * 10); }
+  .space-12 { margin: calc(var(--space-unit) * 12); }
+  .space-16 { margin: calc(var(--space-unit) * 16); }
+}
+
+@layer components {
+  /* Premium Button Variants */
+  .btn-glass {
+    @apply glass rounded-xl px-6 py-3 font-medium transition-all duration-300;
+    @apply hover:scale-105 hover:shadow-glow active:scale-95;
+  }
+
+  .btn-gradient {
+    @apply bg-gradient-primary text-white font-semibold rounded-xl px-6 py-3;
+    @apply transition-all duration-300 hover:scale-105 hover:shadow-elegant;
+    @apply active:scale-95;
+  }
+
+  /* Vietnamese specific components */
+  .vietnamese-card {
+    @apply glass-card rounded-2xl p-6 transition-all duration-300;
+    @apply hover:scale-[1.02] hover:shadow-elegant;
+  }
+
+  .vietnamese-header {
+    @apply glass sticky top-0 z-50 backdrop-blur-md;
+    border-bottom: 1px solid hsl(0 0% 100% / 0.1);
+  }
+
+  /* Scroll reveal animations */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Hover animations */
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-2;
+  }
+
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-glow;
+  }
+}
+
+@layer utilities {
+  /* Micro-animation utilities */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-bounce-subtle {
+    animation: bounce-subtle 2s infinite;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.5s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out;
+  }
+
+  /* Typography utilities */
+  .text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Glass morphism utilities */
+  .backdrop-blur-glass {
+    backdrop-filter: var(--blur-glass);
+    -webkit-backdrop-filter: var(--blur-glass);
+  }
+
+  .backdrop-blur-card {
+    backdrop-filter: var(--blur-card);
+    -webkit-backdrop-filter: var(--blur-card);
+  }
+}
+
+/* Keyframe Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes accordion-down {
+  from { height: 0; opacity: 0; }
+  to { height: var(--radix-accordion-content-height); opacity: 1; }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); opacity: 1; }
+  to { height: 0; opacity: 0; }
+}
+
+/* Loading animation for thesis generation */
+@keyframes thesis-progress {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+.thesis-loading {
+  background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.2), transparent);
+  background-size: 200px 100%;
+  animation: thesis-progress 1.5s infinite;
+}
+
+/* Vietnamese-specific responsive font scaling */
+@media (max-width: 640px) {
+  .vietnamese-title {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    line-height: 1.2;
+  }
+  
+  .vietnamese-subtitle {
+    font-size: clamp(1rem, 3vw, 1.25rem);
+    line-height: 1.4;
   }
 }
