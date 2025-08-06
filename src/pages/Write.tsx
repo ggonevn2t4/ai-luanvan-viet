@@ -8,7 +8,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
-import { Download, Edit, Eye, FileText, Loader } from "lucide-react";
+import { 
+  Download, 
+  Edit, 
+  Eye, 
+  FileText, 
+  Loader, 
+  FileDown,
+  File,
+  Share2
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -28,6 +37,8 @@ const Write = () => {
   const [citationFormat, setCitationFormat] = useState("");
   const [currentThesis, setCurrentThesis] = useState<any>(null);
   const [isLoadingThesis, setIsLoadingThesis] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportFormat, setExportFormat] = useState<'pdf' | 'docx' | 'latex'>('pdf');
   const { toast } = useToast();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -279,10 +290,147 @@ const Write = () => {
         variant: "destructive",
       });
       setGeneratedContent("");
-    } finally {
-      setIsGenerating(false);
-      setProgress(0);
     }
+  };
+
+  const handleExport = async (format: 'pdf' | 'docx' | 'latex') => {
+    if (!currentThesis && !generatedContent) {
+      toast({
+        title: "Lỗi",
+        description: "Không có nội dung để xuất. Vui lòng tạo luận văn trước.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsExporting(true);
+    setExportFormat(format);
+
+    try {
+      const exportData = {
+        thesisId: currentThesis?.id || 'temp',
+        format,
+        options: {
+          includeTableOfContents: true,
+          includeReferences: true,
+          fontSize: 12,
+          pageMargins: '2.5cm',
+          citationStyle: citationFormat || 'APA'
+        }
+      };
+
+      // If no currentThesis, create a temporary one for export
+      let thesisId = currentThesis?.id;
+      if (!thesisId && generatedContent) {
+        const { data: tempThesis, error } = await supabase
+          .from('theses')
+          .insert({
+            user_id: user?.id,
+            title: topic || 'Luận văn tạm thời',
+            content: generatedContent,
+            subject: major,
+            research_method: researchMethod,
+            citation_format: citationFormat,
+            status: 'draft',
+            is_active: true
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+        thesisId = tempThesis.id;
+        exportData.thesisId = thesisId;
+      }
+
+      const { data, error } = await supabase.functions.invoke('export-thesis', {
+        body: exportData
+      });
+
+      if (error) {
+        throw new Error(error.message || 'Có lỗi xảy ra khi xuất file');
+      }
+
+      if (!data.success) {
+        throw new Error(data.error || 'Xuất file thất bại');
+      }
+
+      // Download the file
+      await downloadFile(data.content, data.fileName, data.contentType, format);
+
+      toast({
+        title: "Thành công",
+        description: `Đã xuất luận văn thành công định dạng ${format.toUpperCase()}!`,
+      });
+
+    } catch (error: any) {
+      console.error('Export error:', error);
+      toast({
+        title: "Lỗi",
+        description: error.message || "Có lỗi xảy ra khi xuất file. Vui lòng thử lại.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const downloadFile = async (content: string, fileName: string, contentType: string, format: string) => {
+    let blob: Blob;
+
+    if (format === 'pdf') {
+      // For PDF, convert HTML to PDF using browser's print functionality
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(content);
+        printWindow.document.close();
+        printWindow.focus();
+        
+        setTimeout(() => {
+          printWindow.print();
+          printWindow.close();
+        }, 500);
+      }
+      return;
+    } else if (format === 'docx') {
+      // For DOCX, create a simple document
+      const decodedContent = atob(content);
+      const docContent = JSON.parse(decodedContent);
+      
+      // Create a simple HTML document that can be saved as DOCX
+      const htmlContent = `
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <title>${docContent.title}</title>
+            <style>
+              body { font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 1.5; }
+              h1 { font-size: 16pt; text-align: center; }
+              h2 { font-size: 14pt; }
+              h3 { font-size: 13pt; }
+            </style>
+          </head>
+          <body>
+            <h1>${docContent.title}</h1>
+            <div>${docContent.content.replace(/\n/g, '<br>')}</div>
+          </body>
+        </html>
+      `;
+      
+      blob = new Blob([htmlContent], { type: 'text/html' });
+      fileName = fileName.replace('.docx', '.html');
+    } else {
+      // For LaTeX
+      blob = new Blob([content], { type: 'text/plain' });
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   if (loading || isLoadingThesis) {
@@ -473,14 +621,33 @@ const Write = () => {
             <CardContent>
               {generatedContent ? (
                 <div className="space-y-4">
-                  <div className="flex gap-2 mb-4">
-                    <Button variant="outline" size="sm">
-                      <Download className="w-4 h-4 mr-2" />
-                      Tải PDF
+                  <div className="flex gap-2 mb-4 flex-wrap">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleExport('pdf')}
+                      disabled={isExporting}
+                    >
+                      <FileDown className="w-4 h-4 mr-2" />
+                      {isExporting && exportFormat === 'pdf' ? 'Đang xuất...' : 'Xuất PDF'}
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleExport('docx')}
+                      disabled={isExporting}
+                    >
+                      <File className="w-4 h-4 mr-2" />
+                      {isExporting && exportFormat === 'docx' ? 'Đang xuất...' : 'Xuất DOCX'}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleExport('latex')}
+                      disabled={isExporting}
+                    >
                       <Download className="w-4 h-4 mr-2" />
-                      Tải DOCX
+                      {isExporting && exportFormat === 'latex' ? 'Đang xuất...' : 'Xuất LaTeX'}
                     </Button>
                     <Button variant="outline" size="sm">
                       <Edit className="w-4 h-4 mr-2" />
@@ -489,6 +656,10 @@ const Write = () => {
                     <Button variant="outline" size="sm">
                       <Eye className="w-4 h-4 mr-2" />
                       Xem trước
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <Share2 className="w-4 h-4 mr-2" />
+                      Chia sẻ
                     </Button>
                   </div>
                   
