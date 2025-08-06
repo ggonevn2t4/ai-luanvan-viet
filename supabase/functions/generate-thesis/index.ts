@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const kimiApiKey = Deno.env.get('KIMI_API_KEY');
+const openrouterApiKey = Deno.env.get('OPENROUTER_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,7 +17,7 @@ serve(async (req) => {
   try {
     const { topic, major, academicLevel, pages, requirements, researchMethod, citationFormat } = await req.json();
 
-    console.log('Generating thesis with Kimi API:', { topic, major, academicLevel, pages, researchMethod, citationFormat });
+    console.log('Generating thesis with OpenRouter API (Kimi K2):', { topic, major, academicLevel, pages, researchMethod, citationFormat });
 
     // Create a detailed prompt for thesis generation in Vietnamese
     const prompt = `Tạo một luận văn ${academicLevel.toLowerCase()} chuyên nghiệp về chủ đề "${topic}" trong ngành ${major}. 
@@ -84,14 +84,16 @@ Lưu ý quan trọng:
 - Nội dung phải phù hợp với tiêu chuẩn giáo dục đại học Việt Nam
 - Đảm bảo tính nguyên gốc và chất lượng học thuật cao`;
 
-    const response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${kimiApiKey}`,
+        'Authorization': `Bearer ${openrouterApiKey}`,
         'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://vietnamese-thesis-generator.com',
+        'X-Title': 'Vietnamese Thesis Generator'
       },
       body: JSON.stringify({
-        model: 'moonshot-v1-8k',
+        model: 'moonshot/moonshot-v1-auto',
         messages: [
           {
             role: 'system',
@@ -103,18 +105,18 @@ Lưu ý quan trọng:
           }
         ],
         temperature: 0.7,
-        max_tokens: 4000,
+        max_tokens: 32000,
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Kimi API error:', errorText);
-      throw new Error(`Kimi API error: ${response.status} - ${errorText}`);
+      console.error('OpenRouter API error:', errorText);
+      throw new Error(`OpenRouter API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
-    console.log('Kimi API response received successfully');
+    console.log('OpenRouter API response received successfully');
 
     const generatedContent = data.choices[0].message.content;
 
