@@ -10,12 +10,19 @@ import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { Download, Edit, Eye, FileText, Loader } from "lucide-react";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Write = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
   const [pages, setPages] = useState([50]);
   const [generatedContent, setGeneratedContent] = useState("");
+  const [topic, setTopic] = useState("");
+  const [major, setMajor] = useState("");
+  const [academicLevel, setAcademicLevel] = useState("");
+  const [requirements, setRequirements] = useState("");
+  const { toast } = useToast();
 
   const vietnameseMajors = [
     "Công nghệ thông tin",
@@ -39,88 +46,84 @@ const Write = () => {
   ];
 
   const handleGenerate = async () => {
+    // Validate required fields
+    if (!topic.trim()) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng nhập chủ đề luận văn",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!major) {
+      toast({
+        title: "Lỗi", 
+        description: "Vui lòng chọn ngành học",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!academicLevel) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng chọn mức độ học thuật", 
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsGenerating(true);
     setProgress(0);
+    setGeneratedContent("");
     
-    // Simulate AI generation progress
-    const intervals = [10, 25, 45, 70, 85, 100];
-    for (let i = 0; i < intervals.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setProgress(intervals[i]);
+    try {
+      // Simulate progress while generating
+      const progressInterval = setInterval(() => {
+        setProgress(prev => Math.min(prev + 10, 90));
+      }, 1000);
+
+      const { data, error } = await supabase.functions.invoke('generate-thesis', {
+        body: {
+          topic: topic.trim(),
+          major,
+          academicLevel,
+          pages: pages[0],
+          requirements: requirements.trim()
+        }
+      });
+
+      clearInterval(progressInterval);
+      setProgress(100);
+
+      if (error) {
+        console.error('Error calling generate-thesis function:', error);
+        throw new Error(error.message || 'Có lỗi xảy ra khi tạo luận văn');
+      }
+
+      if (!data.success) {
+        throw new Error(data.error || 'Có lỗi xảy ra khi tạo luận văn');
+      }
+
+      setGeneratedContent(data.content);
+      toast({
+        title: "Thành công",
+        description: "Luận văn đã được tạo thành công!",
+      });
+
+    } catch (error) {
+      console.error('Error generating thesis:', error);
+      toast({
+        title: "Lỗi",
+        description: error.message || "Có lỗi xảy ra khi tạo luận văn. Vui lòng thử lại.",
+        variant: "destructive",
+      });
+      setGeneratedContent("");
+    } finally {
+      setIsGenerating(false);
+      setProgress(0);
     }
-    
-    // Sample generated content
-    setGeneratedContent(`
-# LUẬN VĂN TỐT NGHIỆP
-
-## MỞ ĐẦU
-
-### 1.1. Lý do chọn đề tài
-
-Trong bối cảnh công nghệ thông tin phát triển mạnh mẽ như hiện nay, việc nghiên cứu và ứng dụng các công nghệ tiên tiến vào thực tiễn đã trở thành một yêu cầu cấp thiết...
-
-### 1.2. Mục tiêu nghiên cứu
-
-Mục tiêu tổng quát:
-- Nghiên cứu và phân tích...
-- Xây dựng hệ thống...
-- Đánh giá hiệu quả...
-
-### 1.3. Phương pháp nghiên cứu
-
-Luận văn sử dụng các phương pháp nghiên cứu sau:
-- Phương pháp nghiên cứu lý thuyết
-- Phương pháp thực nghiệm
-- Phương pháp thống kê
-
-## CHƯƠNG 1: CƠ SỞ LÝ THUYẾT
-
-### 1.1. Tổng quan tài liệu
-
-Qua việc nghiên cứu các tài liệu trong và ngoài nước, tác giả đã tham khảo được nhiều nghiên cứu liên quan...
-
-### 1.2. Khung lý thuyết
-
-Khung lý thuyết của nghiên cứu được xây dựng dựa trên...
-
-## CHƯƠNG 2: PHƯƠNG PHÁP NGHIÊN CỨU
-
-### 2.1. Thiết kế nghiên cứu
-
-Nghiên cứu được thiết kế theo mô hình...
-
-### 2.2. Đối tượng và phạm vi nghiên cứu
-
-Đối tượng nghiên cứu: ...
-Phạm vi nghiên cứu: ...
-
-## CHƯƠNG 3: KẾT QUẢ VÀ THẢO LUẬN
-
-### 3.1. Kết quả nghiên cứu
-
-Sau quá trình nghiên cứu, tác giả đã thu được các kết quả sau...
-
-### 3.2. Thảo luận
-
-Kết quả nghiên cứu cho thấy...
-
-## KẾT LUẬN VÀ KIẾN NGHỊ
-
-### Kết luận
-
-Luận văn đã hoàn thành các mục tiêu đề ra...
-
-### Kiến nghị
-
-Dựa trên kết quả nghiên cứu, tác giả đưa ra một số kiến nghị...
-
-## TÀI LIỆU THAM KHẢO
-
-[1] Nguyễn Văn A (2023), "Nghiên cứu về...", NXB Đại học Quốc gia, Hà Nội.
-[2] Trần Thị B (2022), "Phân tích...", Tạp chí Khoa học, số 15.
-    `);
-    
-    setIsGenerating(false);
   };
 
   return (
@@ -148,6 +151,8 @@ Dựa trên kết quả nghiên cứu, tác giả đưa ra một số kiến ngh
                 <Label htmlFor="topic">Chủ đề luận văn *</Label>
                 <Input 
                   id="topic"
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
                   placeholder="Nhập chủ đề luận văn của bạn..."
                   className="mt-2"
                 />
@@ -155,7 +160,7 @@ Dựa trên kết quả nghiên cứu, tác giả đưa ra một số kiến ngh
 
               <div>
                 <Label>Ngành học *</Label>
-                <Select>
+                <Select value={major} onValueChange={setMajor}>
                   <SelectTrigger className="mt-2">
                     <SelectValue placeholder="Chọn ngành học" />
                   </SelectTrigger>
@@ -171,7 +176,7 @@ Dựa trên kết quả nghiên cứu, tác giả đưa ra một số kiến ngh
 
               <div>
                 <Label>Mức độ học thuật *</Label>
-                <Select>
+                <Select value={academicLevel} onValueChange={setAcademicLevel}>
                   <SelectTrigger className="mt-2">
                     <SelectValue placeholder="Chọn mức độ" />
                   </SelectTrigger>
@@ -205,6 +210,8 @@ Dựa trên kết quả nghiên cứu, tác giả đưa ra một số kiến ngh
                 <Label htmlFor="requirements">Yêu cầu đặc biệt</Label>
                 <Textarea 
                   id="requirements"
+                  value={requirements}
+                  onChange={(e) => setRequirements(e.target.value)}
                   placeholder="Mô tả chi tiết về yêu cầu, định hướng nghiên cứu..."
                   className="mt-2 min-h-[100px]"
                 />
