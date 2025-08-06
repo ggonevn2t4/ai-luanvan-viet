@@ -19,12 +19,14 @@ import {
   FileDown,
   File,
   Share2,
-  Lightbulb
+  Lightbulb,
+  Users
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { OutlineGenerator } from "@/components/OutlineGenerator";
+import { CollaborationDashboard } from "@/components/collaboration/CollaborationDashboard";
 
 const Write = () => {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -712,6 +714,27 @@ const Write = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Real-time Collaboration Dashboard */}
+        {currentThesis && (
+          <div className="mt-8">
+            <div className="mb-4">
+              <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                <Users className="w-6 h-6" />
+                Cộng tác thời gian thực
+              </h2>
+              <p className="text-muted-foreground">
+                Làm việc cùng đồng nghiệp, thêm bình luận và theo dõi tiến độ trực tuyến
+              </p>
+            </div>
+            
+            <CollaborationDashboard
+              thesisId={currentThesis.id}
+              content={generatedContent}
+              onContentChange={setGeneratedContent}
+            />
+          </div>
+        )}
       </div>
 
       <Footer />
