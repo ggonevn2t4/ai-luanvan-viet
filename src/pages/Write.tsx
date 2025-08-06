@@ -13,7 +13,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Write = () => {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -26,15 +26,73 @@ const Write = () => {
   const [requirements, setRequirements] = useState("");
   const [researchMethod, setResearchMethod] = useState("");
   const [citationFormat, setCitationFormat] = useState("");
+  const [currentThesis, setCurrentThesis] = useState<any>(null);
+  const [isLoadingThesis, setIsLoadingThesis] = useState(false);
   const { toast } = useToast();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (!loading && !user) {
       navigate("/auth");
     }
   }, [user, loading, navigate]);
+
+  // Load existing thesis if ID is provided in URL
+  useEffect(() => {
+    const thesisId = searchParams.get('thesis');
+    if (thesisId && user) {
+      loadExistingThesis(thesisId);
+    }
+  }, [searchParams, user]);
+
+  const loadExistingThesis = async (thesisId: string) => {
+    setIsLoadingThesis(true);
+    try {
+      const { data, error } = await supabase
+        .from('theses')
+        .select('*')
+        .eq('id', thesisId)
+        .eq('user_id', user?.id)
+        .single();
+
+      if (error) {
+        console.error('Error loading thesis:', error);
+        toast({
+          title: "Lỗi",
+          description: "Không thể tải dự án luận văn.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data) {
+        setCurrentThesis(data);
+        setTopic(data.title || "");
+        setMajor(data.subject || "");
+        setResearchMethod(data.research_method || "");
+        setCitationFormat(data.citation_format || "APA");
+        setPages([data.pages_target || 50]);
+        setRequirements(data.description || "");
+        setGeneratedContent(data.content || "");
+        
+        // Set academic level based on research method or default
+        if (data.research_method) {
+          setAcademicLevel("Thạc sĩ"); // Default, could be stored in DB
+        }
+      }
+    } catch (error) {
+      console.error('Error loading thesis:', error);
+      toast({
+        title: "Lỗi",
+        description: "Có lỗi xảy ra khi tải dự án.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingThesis(false);
+    }
+  };
 
   const vietnameseMajors = [
     "Công nghệ thông tin",
@@ -158,20 +216,51 @@ const Write = () => {
 
       setGeneratedContent(data.content);
       
-      // Save thesis to database
+      // Save or update thesis in database
       try {
-        const { error: dbError } = await supabase
-          .from('theses')
-          .insert({
-            user_id: user?.id,
-            title: topic.trim(),
-            content: data.content,
-            subject: major,
-            status: 'completed'
-          });
+        if (currentThesis) {
+          // Update existing thesis
+          const { error: dbError } = await supabase
+            .from('theses')
+            .update({
+              title: topic.trim(),
+              content: data.content,
+              subject: major,
+              research_method: researchMethod,
+              citation_format: citationFormat,
+              pages_target: pages[0],
+              description: requirements.trim(),
+              status: 'completed',
+              progress_percentage: 100,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', currentThesis.id)
+            .eq('user_id', user?.id);
 
-        if (dbError) {
-          console.error('Error saving thesis:', dbError);
+          if (dbError) {
+            console.error('Error updating thesis:', dbError);
+          }
+        } else {
+          // Create new thesis
+          const { error: dbError } = await supabase
+            .from('theses')
+            .insert({
+              user_id: user?.id,
+              title: topic.trim(),
+              content: data.content,
+              subject: major,
+              research_method: researchMethod,
+              citation_format: citationFormat,
+              pages_target: pages[0],
+              description: requirements.trim(),
+              status: 'completed',
+              progress_percentage: 100,
+              is_active: true
+            });
+
+          if (dbError) {
+            console.error('Error saving thesis:', dbError);
+          }
         }
       } catch (dbError) {
         console.error('Error saving to database:', dbError);
@@ -179,7 +268,7 @@ const Write = () => {
 
       toast({
         title: "Thành công",
-        description: "Luận văn đã được tạo và lưu thành công!",
+        description: currentThesis ? "Luận văn đã được cập nhật thành công!" : "Luận văn đã được tạo và lưu thành công!",
       });
 
     } catch (error) {
@@ -196,6 +285,25 @@ const Write = () => {
     }
   };
 
+  if (loading || isLoadingThesis) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-2 text-muted-foreground">
+                {isLoadingThesis ? "Đang tải dự án..." : "Đang tải..."}
+              </p>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background font-vietnamese">
       <Header />
@@ -203,10 +311,10 @@ const Write = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            Tạo luận văn với AI
+            {currentThesis ? `Chỉnh sửa: ${currentThesis.title}` : "Tạo luận văn với AI"}
           </h1>
           <p className="text-xl text-muted-foreground">
-            Nhập thông tin để AI tạo luận văn chuyên nghiệp cho bạn
+            {currentThesis ? "Cập nhật thông tin và tạo lại nội dung" : "Nhập thông tin để AI tạo luận văn chuyên nghiệp cho bạn"}
           </p>
         </div>
 
