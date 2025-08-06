@@ -7,9 +7,9 @@ import { Check, Star } from "lucide-react";
 const Pricing = () => {
   const plans = [
     {
-      name: "Cơ bản",
+      name: "Miễn phí",
       price: "0",
-      period: "Miễn phí",
+      period: "",
       description: "Dành cho sinh viên mới bắt đầu",
       features: [
         "1 luận văn / tháng",
@@ -23,28 +23,10 @@ const Pricing = () => {
       popular: false
     },
     {
-      name: "Sinh viên",
-      price: "199,000",
+      name: "Chuyên nghiệp",
+      price: "300,000",
       period: "VNĐ / tháng", 
-      description: "Phù hợp cho sinh viên đại học",
-      features: [
-        "5 luận văn / tháng",
-        "Tối đa 50 trang",
-        "Hỗ trợ 24/7",
-        "PDF + DOCX",
-        "Tất cả ngành học",
-        "Kiểm tra đạo văn",
-        "Chỉnh sửa không giới hạn"
-      ],
-      buttonText: "Chọn gói Sinh viên",
-      buttonVariant: "vietnamese" as const,
-      popular: true
-    },
-    {
-      name: "Chuyên nghiệp", 
-      price: "499,000",
-      period: "VNĐ / tháng",
-      description: "Dành cho thạc sĩ, tiến sĩ",
+      description: "Phù hợp cho thạc sĩ, tiến sĩ",
       features: [
         "Không giới hạn luận văn",
         "Tối đa 100 trang",
@@ -56,6 +38,26 @@ const Pricing = () => {
         "Backup đám mây"
       ],
       buttonText: "Chọn gói Chuyên nghiệp",
+      buttonVariant: "vietnamese" as const,
+      popular: true
+    },
+    {
+      name: "Chuyên nghiệp", 
+      price: "3,000,000",
+      period: "VNĐ / năm",
+      description: "Tiết kiệm 17% với gói năm",
+      features: [
+        "Không giới hạn luận văn",
+        "Tối đa 100 trang",
+        "Hỗ trợ ưu tiên",
+        "Tất cả định dạng",
+        "Tư vấn chuyên gia",
+        "Kiểm tra đạo văn nâng cao", 
+        "Trích dẫn tự động",
+        "Backup đám mây",
+        "Tiết kiệm 500,000 VNĐ"
+      ],
+      buttonText: "Chọn gói năm",
       buttonVariant: "outline" as const,
       popular: false
     }
