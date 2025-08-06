@@ -14,6 +14,257 @@ export type Database = {
   }
   public: {
     Tables: {
+      chapters: {
+        Row: {
+          chapter_number: number
+          completed_at: string | null
+          content: string | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          status: string | null
+          target_words: number | null
+          thesis_id: string
+          title: string
+          updated_at: string | null
+          user_id: string
+          word_count: number | null
+        }
+        Insert: {
+          chapter_number: number
+          completed_at?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          target_words?: number | null
+          thesis_id: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+          word_count?: number | null
+        }
+        Update: {
+          chapter_number?: number
+          completed_at?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          target_words?: number | null
+          thesis_id?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          word_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chapters_thesis_id_fkey"
+            columns: ["thesis_id"]
+            isOneToOne: false
+            referencedRelation: "theses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      citations: {
+        Row: {
+          abstract: string | null
+          authors: string[] | null
+          citation_key: string
+          created_at: string | null
+          doi: string | null
+          formatted_citation: string | null
+          id: string
+          is_used: boolean | null
+          isbn: string | null
+          issue: string | null
+          journal_name: string | null
+          keywords: string[] | null
+          notes: string | null
+          pages: string | null
+          publication_type: string | null
+          publication_year: number | null
+          publisher: string | null
+          thesis_id: string
+          title: string
+          updated_at: string | null
+          url: string | null
+          user_id: string
+          volume: string | null
+        }
+        Insert: {
+          abstract?: string | null
+          authors?: string[] | null
+          citation_key: string
+          created_at?: string | null
+          doi?: string | null
+          formatted_citation?: string | null
+          id?: string
+          is_used?: boolean | null
+          isbn?: string | null
+          issue?: string | null
+          journal_name?: string | null
+          keywords?: string[] | null
+          notes?: string | null
+          pages?: string | null
+          publication_type?: string | null
+          publication_year?: number | null
+          publisher?: string | null
+          thesis_id: string
+          title: string
+          updated_at?: string | null
+          url?: string | null
+          user_id: string
+          volume?: string | null
+        }
+        Update: {
+          abstract?: string | null
+          authors?: string[] | null
+          citation_key?: string
+          created_at?: string | null
+          doi?: string | null
+          formatted_citation?: string | null
+          id?: string
+          is_used?: boolean | null
+          isbn?: string | null
+          issue?: string | null
+          journal_name?: string | null
+          keywords?: string[] | null
+          notes?: string | null
+          pages?: string | null
+          publication_type?: string | null
+          publication_year?: number | null
+          publisher?: string | null
+          thesis_id?: string
+          title?: string
+          updated_at?: string | null
+          url?: string | null
+          user_id?: string
+          volume?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "citations_thesis_id_fkey"
+            columns: ["thesis_id"]
+            isOneToOne: false
+            referencedRelation: "theses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collaborators: {
+        Row: {
+          accepted_at: string | null
+          collaborator_email: string
+          collaborator_name: string | null
+          created_at: string | null
+          id: string
+          invited_at: string | null
+          notes: string | null
+          owner_id: string
+          permissions: string[] | null
+          role: string | null
+          status: string | null
+          thesis_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          collaborator_email: string
+          collaborator_name?: string | null
+          created_at?: string | null
+          id?: string
+          invited_at?: string | null
+          notes?: string | null
+          owner_id: string
+          permissions?: string[] | null
+          role?: string | null
+          status?: string | null
+          thesis_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          collaborator_email?: string
+          collaborator_name?: string | null
+          created_at?: string | null
+          id?: string
+          invited_at?: string | null
+          notes?: string | null
+          owner_id?: string
+          permissions?: string[] | null
+          role?: string | null
+          status?: string | null
+          thesis_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collaborators_thesis_id_fkey"
+            columns: ["thesis_id"]
+            isOneToOne: false
+            referencedRelation: "theses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      export_logs: {
+        Row: {
+          created_at: string | null
+          download_count: number | null
+          error_message: string | null
+          expires_at: string | null
+          export_duration: number | null
+          export_format: string
+          export_options: Json | null
+          file_size: number | null
+          id: string
+          status: string | null
+          thesis_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          download_count?: number | null
+          error_message?: string | null
+          expires_at?: string | null
+          export_duration?: number | null
+          export_format: string
+          export_options?: Json | null
+          file_size?: number | null
+          id?: string
+          status?: string | null
+          thesis_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          download_count?: number | null
+          error_message?: string | null
+          expires_at?: string | null
+          export_duration?: number | null
+          export_format?: string
+          export_options?: Json | null
+          file_size?: number | null
+          id?: string
+          status?: string | null
+          thesis_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "export_logs_thesis_id_fkey"
+            columns: ["thesis_id"]
+            isOneToOne: false
+            referencedRelation: "theses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -43,43 +294,124 @@ export type Database = {
       }
       theses: {
         Row: {
+          citation_format: string | null
+          completion_date: string | null
           content: string | null
           created_at: string
+          deadline: string | null
+          description: string | null
           id: string
+          is_active: boolean | null
+          pages_target: number | null
+          progress_percentage: number | null
+          research_method: string | null
           status: string | null
           subject: string | null
+          tags: string[] | null
           title: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          citation_format?: string | null
+          completion_date?: string | null
           content?: string | null
           created_at?: string
+          deadline?: string | null
+          description?: string | null
           id?: string
+          is_active?: boolean | null
+          pages_target?: number | null
+          progress_percentage?: number | null
+          research_method?: string | null
           status?: string | null
           subject?: string | null
+          tags?: string[] | null
           title: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          citation_format?: string | null
+          completion_date?: string | null
           content?: string | null
           created_at?: string
+          deadline?: string | null
+          description?: string | null
           id?: string
+          is_active?: boolean | null
+          pages_target?: number | null
+          progress_percentage?: number | null
+          research_method?: string | null
           status?: string | null
           subject?: string | null
+          tags?: string[] | null
           title?: string
           updated_at?: string
           user_id?: string
         }
         Relationships: []
       }
+      thesis_versions: {
+        Row: {
+          changes_summary: string | null
+          content: string
+          created_at: string | null
+          id: string
+          is_current: boolean | null
+          thesis_id: string
+          title: string
+          user_id: string
+          version_number: number
+          word_count: number | null
+        }
+        Insert: {
+          changes_summary?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          is_current?: boolean | null
+          thesis_id: string
+          title: string
+          user_id: string
+          version_number: number
+          word_count?: number | null
+        }
+        Update: {
+          changes_summary?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_current?: boolean | null
+          thesis_id?: string
+          title?: string
+          user_id?: string
+          version_number?: number
+          word_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "thesis_versions_thesis_id_fkey"
+            columns: ["thesis_id"]
+            isOneToOne: false
+            referencedRelation: "theses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_thesis_progress: {
+        Args: { thesis_id_param: string }
+        Returns: number
+      }
+      create_default_chapters: {
+        Args: { thesis_id_param: string; user_id_param: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
