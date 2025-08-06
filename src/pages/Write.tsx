@@ -16,13 +16,15 @@ import {
   Loader, 
   FileDown,
   File,
-  Share2
+  Share2,
+  Lightbulb
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { OutlineGenerator } from "@/components/OutlineGenerator";
 
 const Write = () => {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -43,6 +45,7 @@ const Write = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [showOutlineGenerator, setShowOutlineGenerator] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -290,6 +293,9 @@ const Write = () => {
         variant: "destructive",
       });
       setGeneratedContent("");
+    } finally {
+      setIsGenerating(false);
+      setProgress(0);
     }
   };
 
@@ -467,10 +473,38 @@ const Write = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Outline Generator - Shows when toggled */}
+          {showOutlineGenerator && (
+            <div className="lg:col-span-2">
+              <OutlineGenerator
+                topic={topic}
+                major={major}
+                academicLevel={academicLevel}
+                researchMethod={researchMethod}
+                pages={pages[0]}
+                requirements={requirements}
+                onOutlineGenerated={(outline) => {
+                  console.log('Generated outline:', outline);
+                }}
+              />
+            </div>
+          )}
+          
+          {/* Input Form */}
           {/* Input Form */}
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle>Thông tin luận văn</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                Thông tin luận văn
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowOutlineGenerator(!showOutlineGenerator)}
+                >
+                  <Lightbulb className="w-4 h-4 mr-2" />
+                  {showOutlineGenerator ? 'Ẩn' : 'Tạo'} dàn bài
+                </Button>
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
