@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      auto_saves: {
+        Row: {
+          chapter_id: string | null
+          content: string
+          created_at: string
+          id: string
+          is_current: boolean | null
+          thesis_id: string
+          user_id: string
+          version_number: number
+        }
+        Insert: {
+          chapter_id?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          is_current?: boolean | null
+          thesis_id: string
+          user_id: string
+          version_number?: number
+        }
+        Update: {
+          chapter_id?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          is_current?: boolean | null
+          thesis_id?: string
+          user_id?: string
+          version_number?: number
+        }
+        Relationships: []
+      }
       chapters: {
         Row: {
           chapter_number: number
@@ -212,6 +245,48 @@ export type Database = {
           },
         ]
       }
+      comments: {
+        Row: {
+          chapter_id: string | null
+          content: string
+          created_at: string
+          id: string
+          parent_comment_id: string | null
+          position_end: number | null
+          position_start: number | null
+          resolved: boolean | null
+          thesis_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          chapter_id?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          parent_comment_id?: string | null
+          position_end?: number | null
+          position_start?: number | null
+          resolved?: boolean | null
+          thesis_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          chapter_id?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          parent_comment_id?: string | null
+          position_end?: number | null
+          position_start?: number | null
+          resolved?: boolean | null
+          thesis_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       export_logs: {
         Row: {
           created_at: string | null
@@ -398,6 +473,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_sessions: {
+        Row: {
+          current_chapter_id: string | null
+          cursor_position: number | null
+          id: string
+          is_active: boolean | null
+          last_activity: string
+          session_start: string
+          thesis_id: string
+          user_id: string
+        }
+        Insert: {
+          current_chapter_id?: string | null
+          cursor_position?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_activity?: string
+          session_start?: string
+          thesis_id: string
+          user_id: string
+        }
+        Update: {
+          current_chapter_id?: string | null
+          cursor_position?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_activity?: string
+          session_start?: string
+          thesis_id?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
