@@ -15,27 +15,74 @@ serve(async (req) => {
   }
 
   try {
-    const { topic, major, academicLevel, pages, requirements } = await req.json();
+    const { topic, major, academicLevel, pages, requirements, researchMethod, citationFormat } = await req.json();
 
-    console.log('Generating thesis with Kimi API:', { topic, major, academicLevel, pages });
+    console.log('Generating thesis with Kimi API:', { topic, major, academicLevel, pages, researchMethod, citationFormat });
 
     // Create a detailed prompt for thesis generation in Vietnamese
     const prompt = `Tạo một luận văn ${academicLevel.toLowerCase()} chuyên nghiệp về chủ đề "${topic}" trong ngành ${major}. 
 
-Yêu cầu:
+Yêu cầu chi tiết:
 - Độ dài: khoảng ${pages} trang
 - Mức độ học thuật: ${academicLevel}
+- Phương pháp nghiên cứu: ${researchMethod}
+- Định dạng trích dẫn: ${citationFormat}
 - Yêu cầu đặc biệt: ${requirements || 'Không có'}
 
-Cấu trúc luận văn phải bao gồm:
-1. MỞ ĐẦU (Lý do chọn đề tài, Mục tiêu nghiên cứu, Phương pháp nghiên cứu)
-2. CHƯƠNG 1: CƠ SỞ LÝ THUYẾT (Tổng quan tài liệu, Khung lý thuyết)
-3. CHƯƠNG 2: PHƯƠNG PHÁP NGHIÊN CỨU (Thiết kế nghiên cứu, Đối tượng và phạm vi)
-4. CHƯƠNG 3: KẾT QUẢ VÀ THẢO LUẬN (Kết quả nghiên cứu, Thảo luận)
-5. KẾT LUẬN VÀ KIẾN NGHỊ
-6. TÀI LIỆU THAM KHẢO
+Cấu trúc luận văn phải tuân thủ chuẩn học thuật Việt Nam:
 
-Viết nội dung chi tiết, chuyên nghiệp và phù hợp với tiêu chuẩn học thuật Việt Nam.`;
+1. TRANG BÌA
+2. LỜI CAM ĐOAN
+3. LỜI CẢM ơN
+4. MỤC LỤC
+5. DANH MỤC CÁC TỪ VIẾT TẮT
+6. DANH MỤC BẢNG, BIỂU
+7. DANH MỤC HÌNH ẢNH
+
+8. MỞ ĐẦU
+   - Lý do chọn đề tài
+   - Mục tiêu nghiên cứu (tổng quát và cụ thể)
+   - Đối tượng và phạm vi nghiên cứu
+   - Phương pháp nghiên cứu: ${researchMethod}
+   - Ý nghĩa khoa học và thực tiễn
+   - Cấu trúc luận văn
+
+9. CHƯƠNG 1: CƠ SỞ LÝ THUYẾT VÀ TỔNG QUAN NGHIÊN CỨU
+   - Tổng quan các nghiên cứu liên quan
+   - Khung lý thuyết cơ sở
+   - Các khái niệm chính
+   - Khoảng trống nghiên cứu
+
+10. CHƯƠNG 2: PHƯƠNG PHÁP NGHIÊN CỨU
+    - Thiết kế nghiên cứu (${researchMethod})
+    - Đối tượng và mẫu nghiên cứu
+    - Công cụ thu thập dữ liệu
+    - Phương pháp phân tích dữ liệu
+    - Đảm bảo tính đáng tin cậy và tính giá trị
+
+11. CHƯƠNG 3: KẾT QUẢ NGHIÊN CỨU VÀ THẢO LUẬN
+    - Trình bày kết quả nghiên cứu
+    - Phân tích và giải thích kết quả
+    - Thảo luận so sánh với các nghiên cứu trước
+    - Hạn chế của nghiên cứu
+
+12. KẾT LUẬN VÀ KIẾN NGHỊ
+    - Tóm tắt những phát hiện chính
+    - Đóng góp khoa học và thực tiễn
+    - Kiến nghị cho nghiên cứu tiếp theo
+    - Kiến nghị cho thực tiễn
+
+13. TÀI LIỆU THAM KHẢO (theo định dạng ${citationFormat})
+
+14. PHỤ LỤC
+
+Lưu ý quan trọng:
+- Sử dụng ngôn ngữ học thuật chính xác và trang trọng
+- Đảm bảo tính logic và mạch lạc trong trình bày
+- Áp dụng đúng phương pháp ${researchMethod}
+- Trích dẫn theo chuẩn ${citationFormat}
+- Nội dung phải phù hợp với tiêu chuẩn giáo dục đại học Việt Nam
+- Đảm bảo tính nguyên gốc và chất lượng học thuật cao`;
 
     const response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
       method: 'POST',

@@ -24,6 +24,8 @@ const Write = () => {
   const [major, setMajor] = useState("");
   const [academicLevel, setAcademicLevel] = useState("");
   const [requirements, setRequirements] = useState("");
+  const [researchMethod, setResearchMethod] = useState("");
+  const [citationFormat, setCitationFormat] = useState("");
   const { toast } = useToast();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -55,6 +57,24 @@ const Write = () => {
     "Tiến sĩ"
   ];
 
+  const researchMethods = [
+    "Nghiên cứu định tính",
+    "Nghiên cứu định lượng", 
+    "Nghiên cứu hỗn hợp",
+    "Nghiên cứu lý thuyết",
+    "Nghiên cứu thực nghiệm",
+    "Nghiên cứu khảo sát"
+  ];
+
+  const citationFormats = [
+    "APA",
+    "MLA", 
+    "Harvard",
+    "Vancouver",
+    "Chicago",
+    "IEEE"
+  ];
+
   const handleGenerate = async () => {
     // Validate required fields
     if (!topic.trim()) {
@@ -84,6 +104,24 @@ const Write = () => {
       return;
     }
 
+    if (!researchMethod) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng chọn phương pháp nghiên cứu",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!citationFormat) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng chọn định dạng trích dẫn",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsGenerating(true);
     setProgress(0);
     setGeneratedContent("");
@@ -100,7 +138,9 @@ const Write = () => {
           major,
           academicLevel,
           pages: pages[0],
-          requirements: requirements.trim()
+          requirements: requirements.trim(),
+          researchMethod,
+          citationFormat
         }
       });
 
@@ -214,6 +254,38 @@ const Write = () => {
                     {academicLevels.map((level) => (
                       <SelectItem key={level} value={level}>
                         {level}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label>Phương pháp nghiên cứu *</Label>
+                <Select value={researchMethod} onValueChange={setResearchMethod}>
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Chọn phương pháp nghiên cứu" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {researchMethods.map((method) => (
+                      <SelectItem key={method} value={method}>
+                        {method}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label>Định dạng trích dẫn *</Label>
+                <Select value={citationFormat} onValueChange={setCitationFormat}>
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Chọn định dạng trích dẫn" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {citationFormats.map((format) => (
+                      <SelectItem key={format} value={format}>
+                        {format}
                       </SelectItem>
                     ))}
                   </SelectContent>
