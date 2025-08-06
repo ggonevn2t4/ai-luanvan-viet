@@ -15,6 +15,18 @@ serve(async (req) => {
   }
 
   try {
+    // Check if API key is configured
+    if (!openrouterApiKey) {
+      console.error('OpenRouter API key not configured');
+      return new Response(JSON.stringify({ 
+        success: false,
+        error: 'OpenRouter API key not configured. Please set OPENROUTER_API_KEY in Supabase secrets.' 
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const { topic, major, academicLevel, pages, requirements, researchMethod, citationFormat } = await req.json();
 
     console.log('Generating thesis with OpenRouter API (Kimi K2):', { topic, major, academicLevel, pages, researchMethod, citationFormat });
