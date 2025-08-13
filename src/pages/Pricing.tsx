@@ -58,11 +58,7 @@ interface UserSubscription {
   expires_at: string;
 }
 
-interface UserUsage {
-  feature_type: string;
-  count: number;
-  reset_date: string;
-}
+// Remove this interface since we're using the hook now
 
 const Pricing = () => {
   console.log('Pricing component rendering...');
@@ -123,6 +119,7 @@ const Pricing = () => {
   };
 
   const getUsageCount = (featureType: string): number => {
+    if (!usage || !Array.isArray(usage)) return 0;
     const found = usage.find(u => u.feature_type === featureType);
     return found ? found.count : 0;
   };
@@ -210,9 +207,9 @@ const Pricing = () => {
                           <Zap className="h-4 w-4" />
                           Tạo luận văn AI
                         </span>
-                        <span>{getUsageCount('ai_generations_per_month')}/{subscription.features.ai_generations_per_month}</span>
+                        <span>{getUsageCount('ai_generations_per_month')}/{subscription.features?.ai_generations_per_month || 0}</span>
                       </div>
-                      <Progress value={getUsagePercentage('ai_generations_per_month', subscription.features.ai_generations_per_month)} />
+                      <Progress value={getUsagePercentage('ai_generations_per_month', subscription.features?.ai_generations_per_month || 0)} />
                     </div>
 
                     <div className="space-y-2">
@@ -221,9 +218,9 @@ const Pricing = () => {
                           <Download className="h-4 w-4" />
                           Xuất file
                         </span>
-                        <span>{getUsageCount('exports_per_month')}/{subscription.features.exports_per_month}</span>
+                        <span>{getUsageCount('exports_per_month')}/{subscription.features?.exports_per_month || 0}</span>
                       </div>
-                      <Progress value={getUsagePercentage('exports_per_month', subscription.features.exports_per_month)} />
+                      <Progress value={getUsagePercentage('exports_per_month', subscription.features?.exports_per_month || 0)} />
                     </div>
 
                     <div className="space-y-2">
@@ -232,7 +229,7 @@ const Pricing = () => {
                           <Users className="h-4 w-4" />
                           Cộng tác
                         </span>
-                        <span>0/{subscription.features.collaboration_projects}</span>
+                        <span>0/{subscription.features?.collaboration_projects || 0}</span>
                       </div>
                       <Progress value={0} />
                     </div>
