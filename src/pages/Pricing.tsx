@@ -22,7 +22,10 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useSubscription } from '@/hooks/useSubscription';
 import BankTransferDialog from '@/components/BankTransferDialog';
+
+console.log('Pricing component loading...');
 
 interface SubscriptionPlan {
   id: string;
@@ -62,15 +65,22 @@ interface UserUsage {
 }
 
 const Pricing = () => {
+  console.log('Pricing component rendering...');
+  
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
-  const [currentSubscription, setCurrentSubscription] = useState<UserSubscription | null>(null);
-  const [usage, setUsage] = useState<UserUsage[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
   const [showBankTransfer, setShowBankTransfer] = useState(false);
   
   const { user } = useAuth();
   const { toast } = useToast();
+  
+  // Use the subscription hook instead of local state
+  const { 
+    subscription, 
+    usage, 
+    isLoading, 
+    refreshSubscription 
+  } = useSubscription();
 
   useEffect(() => {
     loadSubscriptionData();
@@ -91,26 +101,9 @@ const Pricing = () => {
         features: plan.features as unknown as SubscriptionPlan['features']
       })));
 
-      if (user) {
-        // Load current subscription
-        const { data: subData, error: subError } = await supabase
-          .rpc('get_user_subscription', { user_id_param: user.id });
+      // Refresh subscription data using the hook
+      await refreshSubscription();
 
-        if (subError) throw subError;
-        if (subData && subData.length > 0) {
-          setCurrentSubscription(subData[0]);
-        }
-
-        // Load usage data
-        const { data: usageData, error: usageError } = await supabase
-          .from('user_usage')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('reset_date', new Date().toISOString().split('T')[0]);
-
-        if (usageError) throw usageError;
-        setUsage(usageData || []);
-      }
     } catch (error) {
       console.error('Error loading subscription data:', error);
       toast({
@@ -118,8 +111,6 @@ const Pricing = () => {
         description: "Không thể tải thông tin gói dịch vụ",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -163,7 +154,7 @@ const Pricing = () => {
     setShowBankTransfer(true);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background font-vietnamese">
         <Header />
@@ -197,17 +188,17 @@ const Pricing = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {currentSubscription ? (
+              {subscription ? (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-semibold text-lg">{currentSubscription.plan_name_vietnamese}</h3>
+                      <h3 className="font-semibold text-lg">{subscription.plan_name_vietnamese}</h3>
                       <p className="text-muted-foreground">
-                        Hết hạn: {new Date(currentSubscription.expires_at).toLocaleDateString('vi-VN')}
+                        Hết hạn: {new Date(subscription.expires_at).toLocaleDateString('vi-VN')}
                       </p>
                     </div>
-                    <Badge variant={currentSubscription.status === 'active' ? 'default' : 'secondary'}>
-                      {currentSubscription.status === 'active' ? 'Đang hoạt động' : 'Không hoạt động'}
+                    <Badge variant={subscription.status === 'active' ? 'default' : 'secondary'}>
+                      {subscription.status === 'active' ? 'Đang hoạt động' : 'Không hoạt động'}
                     </Badge>
                   </div>
 
@@ -219,9 +210,9 @@ const Pricing = () => {
                           <Zap className="h-4 w-4" />
                           Tạo luận văn AI
                         </span>
-                        <span>{getUsageCount('ai_generation')}/{currentSubscription.features.ai_generations_per_month}</span>
+                        <span>{getUsageCount('ai_generations_per_month')}/{subscription.features.ai_generations_per_month}</span>
                       </div>
-                      <Progress value={getUsagePercentage('ai_generation', currentSubscription.features.ai_generations_per_month)} />
+                      <Progress value={getUsagePercentage('ai_generations_per_month', subscription.features.ai_generations_per_month)} />
                     </div>
 
                     <div className="space-y-2">
@@ -230,9 +221,9 @@ const Pricing = () => {
                           <Download className="h-4 w-4" />
                           Xuất file
                         </span>
-                        <span>{getUsageCount('export')}/{currentSubscription.features.exports_per_month}</span>
+                        <span>{getUsageCount('exports_per_month')}/{subscription.features.exports_per_month}</span>
                       </div>
-                      <Progress value={getUsagePercentage('export', currentSubscription.features.exports_per_month)} />
+                      <Progress value={getUsagePercentage('exports_per_month', subscription.features.exports_per_month)} />
                     </div>
 
                     <div className="space-y-2">
@@ -241,7 +232,7 @@ const Pricing = () => {
                           <Users className="h-4 w-4" />
                           Cộng tác
                         </span>
-                        <span>0/{currentSubscription.features.collaboration_projects}</span>
+                        <span>0/{subscription.features.collaboration_projects}</span>
                       </div>
                       <Progress value={0} />
                     </div>
@@ -272,7 +263,7 @@ const Pricing = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.map((plan, index) => {
             const isPopular = plan.name === 'Premium';
-            const isCurrent = currentSubscription?.plan_name === plan.name;
+            const isCurrent = subscription?.plan_name === plan.name;
             
             return (
               <Card key={plan.id} className={`relative ${isPopular ? 'border-primary shadow-lg scale-105' : ''}`}>
