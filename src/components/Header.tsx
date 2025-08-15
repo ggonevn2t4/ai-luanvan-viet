@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { BookOpen, Menu, X, LogOut, User } from "lucide-react";
+import { BookOpen, Menu, X, LogOut, User, Shield } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useToast } from "@/hooks/use-toast";
 import {
   DropdownMenu,
@@ -16,6 +17,7 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdminAuth();
   const { toast } = useToast();
 
   const handleSignOut = async () => {
@@ -38,6 +40,7 @@ const Header = () => {
   const navItems = [
     { name: "Trang chủ", path: "/" },
     ...(user ? [{ name: "Dashboard", path: "/dashboard" }] : []),
+    ...(isAdmin ? [{ name: "Admin", path: "/admin" }] : []),
     { name: "Viết luận văn", path: "/write" },
     { name: "Bảng giá", path: "/pricing" },
     { name: "Về chúng tôi", path: "/about" },
@@ -85,6 +88,14 @@ const Header = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin">
+                        <Shield className="w-4 h-4 mr-2" />
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="w-4 h-4 mr-2" />
                     Đăng xuất

@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
@@ -585,6 +585,33 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_sessions: {
         Row: {
           current_chapter_id: string | null
@@ -708,35 +735,87 @@ export type Database = {
         Returns: number
       }
       check_feature_limit: {
-        Args: { user_id_param: string; feature_type_param: string }
+        Args: { feature_type_param: string; user_id_param: string }
         Returns: boolean
       }
       create_default_chapters: {
         Args: { thesis_id_param: string; user_id_param: string }
         Returns: undefined
       }
+      get_all_users_with_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          created_at: string
+          email: string
+          full_name: string
+          last_sign_in_at: string
+          plan_name: string
+          role: string
+          subscription_status: string
+          total_theses: number
+          user_id: string
+        }[]
+      }
       get_current_user_email: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_payment_transactions_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          amount_vnd: number
+          created_at: string
+          payment_method: string
+          plan_name: string
+          status: string
+          transaction_code: string
+          transaction_id: string
+          user_email: string
+          user_name: string
+          verified_at: string
+        }[]
+      }
+      get_system_analytics: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          active_subscriptions: number
+          monthly_signups: number
+          pending_payments: number
+          total_revenue: number
+          total_theses: number
+          total_users: number
+        }[]
+      }
       get_user_subscription: {
         Args: { user_id_param: string }
         Returns: {
-          subscription_id: string
+          expires_at: string
+          features: Json
           plan_name: string
           plan_name_vietnamese: string
           status: string
-          features: Json
-          expires_at: string
+          subscription_id: string
         }[]
       }
       increment_feature_usage: {
-        Args: { user_id_param: string; feature_type_param: string }
+        Args: { feature_type_param: string; user_id_param: string }
+        Returns: boolean
+      }
+      is_admin: {
+        Args: { user_id_param?: string }
+        Returns: boolean
+      }
+      update_payment_status: {
+        Args: { new_status_param: string; transaction_id_param: string }
         Returns: boolean
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -863,6 +942,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
